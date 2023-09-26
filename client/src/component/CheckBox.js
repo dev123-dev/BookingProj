@@ -9,14 +9,18 @@ export default function CheckBox({ category, addLevels, removeLevels }) {
   };
 
   return (
-    <div className="checkbox-container">
-      <input
-        id={category._id}
-        type="checkbox"
-        value={category.categoryName}
-        onChange={(e) => checkboxHandler(e, category)}
-      />
-      <label htmlFor={category._id}>{category.categoryWithCount}</label>
+    <div className="checkbox-container custom-checkbox">
+      <label htmlFor={category._id} style={{ cursor: "pointer" }}>
+        <input
+          id={category._id}
+          type="checkbox"
+          value={category.categoryName}
+          style={{ cursor: "pointer" }}
+          onChange={(e) => checkboxHandler(e, category)}
+        />
+        &nbsp;&nbsp;
+        {category.categoryWithCount}
+      </label>
     </div>
   );
 }

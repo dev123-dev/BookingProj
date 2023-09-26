@@ -1,0 +1,120 @@
+/* Slider.css */
+@media (min-width: 551px) {
+  .sliding-page {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 26%; /* Adjust the width as needed */
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+  }
+  .filter-container {
+    max-height: 750px; /* Set your desired max height here */
+    overflow-y: auto;
+  }
+}
+@media (max-width: 550px) {
+  .sliding-page {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%; /* Adjust the width as needed */
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+  }
+  .filter-container {
+    max-height: 550px; /* Set your desired max height here */
+    overflow-y: auto;
+  }
+}
+@media only screen and (min-width: 551px) and (max-width: 1669px) {
+  .sliding-page {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 70%; /* Adjust the width as needed */
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+  }
+  .filter-container {
+    max-height: 900px; /* Set your desired max height here */
+    overflow-y: auto;
+  }
+}
+
+.sliding-page.open {
+  transform: translateX(0);
+}
+
+.sliding-page-content {
+  padding: 5px;
+  height: 100%;
+  /* overflow-y: auto; */
+}
+
+/* Add this CSS to hide the scrollbar until the container is hovered */
+.filter-container::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+.filter-container::-webkit-scrollbar-thumb {
+  background-color: white;
+}
+
+.filter-container::-webkit-scrollbar-thumb:hover {
+  background-color: white;
+}
+
+.filter-content {
+  overflow-x: hidden;
+}
+
+/* Slide in from the right */
+.sliding-page.open {
+  transform: translateX(0);
+}
+
+.sliding-page.closed {
+  transform: translateX(100%);
+}
+.close-btn {
+  margin-right: auto;
+  background-color: transparent;
+  color: black;
+  border: none;
+  border-radius: 25px/25px !important;
+}
+
+.page-content {
+  position: absolute;
+  overflow: hidden;
+}
+.hoverbtn {
+  color: #ffffff;
+  width: "80px";
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.navlink {
+  font-size: 16px;
+  font-weight: bold;
+}
+.navlink.active {
+  color: #d9d9d9;
+}

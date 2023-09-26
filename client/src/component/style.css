@@ -1,7 +1,35 @@
-button {
-  background-color: black;
-  color: white;
-  margin-left: 130px;
-  margin-bottom: 30px;
-  margin-top: 20px;
+.selection {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid transparent;
+  /* position: fixed;
+  top: 0;
+  left: 0;
+  width: 350px;
+  background-color: white;
+  padding: 10px;
+  z-index: 1000; */
+}
+.btnclear {
+  background-color: transparent;
+  color: black;
+  cursor: pointer;
+  border: none;
+  margin-left: 300px;
+}
+
+.btnclear:active,
+.btnclear:focus {
+  outline: none;
+}
+
+.fixed-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  z-index: 1000;
 }

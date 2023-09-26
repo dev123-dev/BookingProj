@@ -1,20 +1,17 @@
+//New code
 import React from "react";
 import axios from "axios";
-import "../component/style.css";
+import "../component/styles/style.css";
 import { useState, useEffect } from "react";
 import Page2 from "./Page2";
+import cancel from "../asset/cancel.png";
 
 export default function Page1() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [catArr, setCatArr] = useState([]);
   const [assetArr, setAssetArr] = useState([]);
   const [subcategory, setSubCategory] = useState([]);
-  const [subcategory2, setSubCategory2] = useState([]);
-  const [subcategory3, setSubCategory3] = useState([]);
-
-  //to maintain the state of div for sub categories
-  const [showSubCat, setShowSubCat] = useState(false);
-  const [catSubSelect, setCatSubSelect] = useState(false);
+  const [openDivs, setOpenDivs] = useState({});
 
   // Make a Post request to the backend API endpoint to Fetch All First Level Categories
   useEffect(() => {
@@ -28,136 +25,55 @@ export default function Page1() {
       });
   }, []);
 
-  //Handle First Level Category Click
+  //handle the checkbox select operation
+  const [selectCheckbox, setSelectCheckbox] = useState([]);
+  const [categoryDataFetched, setCategoryDataFetched] = useState([]);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
 
   const handleClick = async (e, category) => {
     let filteredCategories;
     const { checked } = e.target;
-
-    if (checked) {
-      await axios
-        .post(`http://localhost:5000/api`, { belongsToId: category._id })
-        .then((response) => {
-          const hasAssetFields = response.data.some((obj) =>
-            obj.hasOwnProperty("assetName")
-          );
-          setSubCategory(response.data);
-          setCatSubSelect(true);
-          setShowSubCat(false);
-
-          if (hasAssetFields) {
-            setAssetArr((prevAssetArr) => [...prevAssetArr, ...response.data]);
-          } else {
-            setCatArr((prevCatArr) => [...prevCatArr, ...response.data]);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-      setSelectedCategories([...selectedCategories, category._id]);
+    if (selectCheckbox.includes(category._id)) {
+      setSelectCheckbox(selectCheckbox.filter((item) => item !== category._id));
     } else {
-      setSubCategory2([]);
-      setCatSubSelect(false);
-      setShowSubCat(false);
-
-      filteredCategories = filteredCategoriesRecursive(category, 0);
-      setCatArr(
-        catArr.filter((category) => !filteredCategories.includes(category._id))
-      );
-
-      filteredCategories.push(category._id); // Adding the Category selected
-      setSelectedCategories(
-        selectedCategories.filter(
-          (catId) => !filteredCategories.includes(catId)
-        )
-      );
-      setAssetArr(
-        assetArr.filter(
-          (assetObj) => !filteredCategories.includes(assetObj._id)
-        )
-      );
+      setSelectCheckbox([...selectCheckbox, category._id]);
     }
-  };
 
-  const handleClick1 = async (e, category) => {
-    let filteredCategories;
-    const { checked } = e.target;
-
-    if (checked) {
-      await axios
+    if (checked && !categoryDataFetched.includes(category._id)) {
+      // Only fetch data if it hasn't been fetched for this category before
+      axios
         .post(`http://localhost:5000/api`, { belongsToId: category._id })
         .then((response) => {
           const hasAssetFields = response.data.some((obj) =>
             obj.hasOwnProperty("assetName")
           );
-          // setSubCategory2(response.data);
 
-          setSubCategory2((prevAssetArr) => [
-            ...prevAssetArr,
-            ...response.data,
-          ]);
-          setShowSubCat(true);
+          setSubCategory((prevSubCategories) => {
+            return [...prevSubCategories, ...response.data];
+          });
 
           if (hasAssetFields) {
             setAssetArr((prevAssetArr) => [...prevAssetArr, ...response.data]);
+            setSelectedCheckboxes([...selectedCheckboxes, category]);
           } else {
             setCatArr((prevCatArr) => [...prevCatArr, ...response.data]);
+            setSelectedCheckboxes(
+              selectedCheckboxes.filter((item) => item._id !== category._id)
+            );
           }
+
+          // Mark this category as fetched
+          setCategoryDataFetched([...categoryDataFetched, category._id]);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
         });
-      setSelectedCategories([...selectedCategories, category._id]);
     } else {
-      setShowSubCat(false);
-      setSubCategory2([]);
-
+      setSelectedCheckboxes(
+        selectedCheckboxes.filter((item) => item._id !== category._id)
+      );
       filteredCategories = filteredCategoriesRecursive(category, 0);
-      setCatArr(
-        catArr.filter((category) => !filteredCategories.includes(category._id))
-      );
-
-      filteredCategories.push(category._id); // Adding the Category selected
-      setSelectedCategories(
-        selectedCategories.filter(
-          (catId) => !filteredCategories.includes(catId)
-        )
-      );
-      setAssetArr(
-        assetArr.filter(
-          (assetObj) => !filteredCategories.includes(assetObj._id)
-        )
-      );
-    }
-  };
-  const handleClick2 = async (e, category) => {
-    let filteredCategories;
-    const { checked } = e.target;
-
-    if (checked) {
-      await axios
-        .post(`http://localhost:5000/api`, { belongsToId: category._id })
-        .then((response) => {
-          const hasAssetFields = response.data.some((obj) =>
-            obj.hasOwnProperty("assetName")
-          );
-          setSubCategory3(response.data);
-
-          if (hasAssetFields) {
-            setAssetArr((prevAssetArr) => [...prevAssetArr, ...response.data]);
-          } else {
-            setCatArr((prevCatArr) => [...prevCatArr, ...response.data]);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-      setSelectedCategories([...selectedCategories, category._id]);
-    } else {
-      filteredCategories = filteredCategoriesRecursive(category, 0);
-      setCatArr(
-        catArr.filter((category) => !filteredCategories.includes(category._id))
-      );
+      setCatArr(catArr.filter((cat) => !filteredCategories.includes(cat._id)));
 
       filteredCategories.push(category._id); // Adding the Category selected
       setSelectedCategories(
@@ -190,67 +106,90 @@ export default function Page1() {
     return filteredCategories;
   };
 
-  // console.log("assetArr", assetArr);
-  // console.log("catArray", catArr);
-  // console.log("selectedCategoriesOutside", selectedCategories);
-
   //category array for ground level categories
 
   let categoryArr = [];
   categoryArr = catArr && catArr.filter((cat) => cat.belongsToId === null);
-  //category array for subcategories
+  //category array for subcategories containing only categoryName
   let sub = [];
   sub = subcategory && subcategory.filter((sub) => sub.categoryName);
 
-  // const [divs, setDivs] = useState([]);
-  // const addDiv = () => {
+  const handleDeselect = (category) => {
+    const updatedSelectedCheckboxes = selectedCheckboxes.filter(
+      (item) => item._id !== category._id
+    );
+    setSelectedCheckboxes(updatedSelectedCheckboxes);
 
-  //   const newDivs = [
-  //     ...divs,
-  //     <div className="dynamic-div">
-  //       {" "}
-  //       {selectedCategories &&
-  //         sub &&
-  //         sub.map((category, index) => {
-  //           return (
-  //             <div key={category._id} className="col-lg-6 col-md-4 my-2 ">
-  //               <input
-  //                 key={category._id}
-  //                 name={category.categoryName}
-  //                 type="checkbox"
-  //                 onChange={(e) => handleClick1(e, category)}
-  //                 onClick={addDiv}
-  //               />
-  //               &nbsp;
-  //               {category.categoryWithCount}
-  //             </div>
-  //           );
-  //         })}
-  //     </div>,
-  //   ];
-  //   setDivs(newDivs);
-  // };
+    const checkbox = document.getElementsByName(category.categoryName)[0];
+    if (checkbox) {
+      checkbox.checked = false;
+      handleClick({ target: checkbox }, category);
+    }
+  };
 
+  const clearFilter = () => {
+    // Uncheck all selected checkboxes
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    setSelectedCheckboxes([]);
+    setAssetArr([]);
+    setSubCategory([]);
+    setSelectCheckbox([]);
+    setSelectedCategories([]);
+  };
   return (
-    <div>
+    <div className="justify-content-center">
+      <div>
+        <h5>
+          <button
+            style={{ fontSize: "16px" }}
+            className="btnclear"
+            onClick={() => clearFilter()}
+          >
+            Clear
+          </button>
+        </h5>
+      </div>
+
       <div
-        style={{ border: "2px solid black", height: "800px", width: "520px" }}
-        className="main"
+        className="col-lg-12 col-md-12 col-sm-12 selection"
+        style={{ width: "350px" }}
+      >
+        {selectedCheckboxes &&
+          selectedCheckboxes.map((selectedCategory, index) => (
+            <div key={index} style={{ margin: "5px" }}>
+              {selectedCategory.categoryName}
+              <img
+                src={cancel}
+                alt="cancel"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleDeselect(selectedCategory)}
+                width="20px"
+                height="20px"
+              />
+            </div>
+          ))}
+      </div>
+
+      {/*show ground level categories*/}
+      <div
+        style={{ height: "700px", width: "450px" }}
+        className="main col-lg-12 col-sm-12 col-md-12"
       >
         <h4 className="text-left ml-2">Category</h4>
-        <div className="row col-lg-12 col-md-12 col-12">
+        <div className="row col-lg-12 col-md-12 col-12 ">
           {categoryArr &&
             categoryArr.map((category, index) => {
               return (
-                <div
-                  key={category._id}
-                  className="col-lg-6 col-md-4 my-2 text-left"
-                >
+                <div key={index} className="col-lg-6 col-md-4 my-2 text-left">
                   <input
                     key={category._id}
                     name={category.categoryName}
                     type="checkbox"
                     onChange={(e) => handleClick(e, category)}
+                    // checked={selectCheckbox.includes(category._id)}
                   />
                   &nbsp;
                   {category.categoryWithCount}
@@ -258,92 +197,76 @@ export default function Page1() {
               );
             })}
         </div>
-        {catSubSelect ? (
+        {/* End of showing ground level categories */}
+        {/* show subcategories */}
+        {selectCheckbox.map((selectedId, index) => (
           <>
-            {/* <h4 className="text-left ml-2">Rooms</h4> */}
             <div
-              className="row col-lg-12 col-md-12 col-12 "
-              style={{ border: "1px solid black" }}
+              key={index}
+              style={{ border: "1px solid green" }}
+              className="col-lg-12 col-sm-12 col-md-12 my-1"
             >
-              {sub &&
-                sub.map((category, index) => {
-                  return (
-                    <div key={category._id} className="col-lg-6 col-md-4 my-2 ">
-                      <input
-                        key={category._id}
-                        name={category.categoryName}
-                        type="checkbox"
-                        onChange={(e) => handleClick1(e, category, index)}
-                      />
-                      &nbsp;
-                      {category.categoryWithCount}
-                    </div>
-                  );
-                })}
-              {showSubCat ? (
-                <>
-                  {" "}
-                  <div
-                    className="row col-lg-12 col-md-12 col-12 ml-1"
-                    style={{ border: "1px solid black" }}
-                  >
-                    {subcategory2 &&
-                      subcategory2.map((category, index) => {
+              <div style={{ display: "flex", alignItems: "center" }}>
+                {sub.find((item) => item._id === selectedId)?.categoryName}
+
+                {
+                  categoryArr.find((item) => item._id === selectedId)
+                    ?.categoryName
+                }
+
+                <div
+                  onClick={() => {
+                    setOpenDivs((prevState) => ({
+                      ...prevState,
+                      [selectedId]: !prevState[selectedId],
+                    }));
+                  }}
+                  style={{
+                    cursor: "pointer",
+                    marginLeft: "auto",
+                  }}
+                >
+                  {openDivs[selectedId] ? "▼" : "▲"}
+                </div>
+              </div>
+
+              {!openDivs[selectedId] && (
+                <div>
+                  {sub &&
+                    sub
+                      .filter((category) => category.belongsToId === selectedId)
+                      .map((category, index) => {
                         return (
-                          <div key={index} className="col-lg-6 col-md-4 my-2 ">
+                          <div
+                            key={index}
+                            className="col-lg-12 col-sm-12 col-md-12 my-2 "
+                          >
                             <input
                               key={category._id}
                               name={category.categoryName}
                               type="checkbox"
-                              onChange={(e) => handleClick2(e, category)}
+                              onChange={(e) => handleClick(e, category)}
                             />
                             &nbsp;
                             {category.categoryWithCount}
                           </div>
                         );
                       })}
-                  </div>
-                </>
-              ) : (
-                <></>
+                </div>
               )}
             </div>
           </>
-        ) : (
-          <></>
-        )}
+        ))}
+        {/*End of show subcategories*/}
+        {/* Button showing count of assets */}
 
         <div id="bottom">
           <button className="btnResult">
-            Showing &nbsp;{assetArr.length} results
+            Showing &nbsp;{assetArr.length}&nbsp;results
           </button>
         </div>
-        {/* <div className="container">
-          {divs.map((divElement, index) => (
-            <div key={index}>{divElement}</div>
-          ))}
-        </div> */}
       </div>
-      {/* <div className="row col-lg-12 col-md-12 col-12">
-        {categoryArr1 &&
-          categoryArr1.map((category, index) => {
-            return (
-              <div
-                key={category._id}
-                className="col-lg-6 col-md-4 my-2 text-left"
-              >
-                <input
-                  key={category._id}
-                  name={category.categoryName}
-                  type="checkbox"
-                  onChange={(e) => handleClick(e, category)}
-                />
-                &nbsp;
-                {category.categoryWithCount}
-              </div>
-            );
-          })}
-      </div> */}
+
       <Page2 data={assetArr} />
     </div>
   );

@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const Category = require("./model/category");
+const filenames = require("./model/filenames");
 const assets = require("./model/assets");
 const cors = require("cors");
 
@@ -34,81 +35,104 @@ app.post("/api", async (req, res) => {
     let query =
       resSubCategory.length !== 0
         ? [
-          {
-            $match: {
-              belongsToId: !belongsToId //!data.label
-                ? belongsToId
-                : new mongoose.Types.ObjectId(belongsToId),
-              instId: new mongoose.Types.ObjectId("64c8a1333a682392b042c38f"),
-              propertyId: new mongoose.Types.ObjectId(
-                "64c8a4d13a682392b042c399"
-              ),
-            },
-          },
-          {
-            $lookup: {
-              from: "assets",
-              localField: "_id",
-              foreignField: "category._id",
-              as: "assets",
-            },
-          },
-          {
-            $project: {
-              categoryName: 1,
-              categoryWithCount: {
-                $concat: [
-                  "$categoryName",
-                  " (",
-                  { $toString: { $size: "$assets" } },
-                  ")",
-                ],
-              },
-              belongsToId: "$belongsToId",
-              assetCount: {
-                $size: "$assets",
+            {
+              $match: {
+                belongsToId: !belongsToId //!data.label
+                  ? belongsToId
+                  : new mongoose.Types.ObjectId(belongsToId),
+                instId: new mongoose.Types.ObjectId("64c8a1333a682392b042c38f"),
+                propertyId: new mongoose.Types.ObjectId(
+                  "64c8a4d13a682392b042c399"
+                ),
               },
             },
-          },
-        ]
+            {
+              $lookup: {
+                from: "assets",
+                localField: "_id",
+                foreignField: "category._id",
+                as: "assets",
+              },
+            },
+            {
+              $project: {
+                categoryName: 1,
+                categoryWithCount: {
+                  $concat: [
+                    "$categoryName",
+                    " (",
+                    { $toString: { $size: "$assets" } },
+                    ")",
+                  ],
+                },
+                belongsToId: "$belongsToId",
+                assetCount: {
+                  $size: "$assets",
+                },
+                belongsToCat: "$belongsToCat",
+              },
+            },
+          ]
         : [
-          {
-            $match: {
-              _id: !belongsToId //!data.label
-                ? belongsToId
-                : new mongoose.Types.ObjectId(belongsToId),
-              instId: new mongoose.Types.ObjectId("64c8a1333a682392b042c38f"),
-              propertyId: new mongoose.Types.ObjectId(
-                "64c8a4d13a682392b042c399"
-              ),
+            {
+              $match: {
+                _id: !belongsToId //!data.label
+                  ? belongsToId
+                  : new mongoose.Types.ObjectId(belongsToId),
+                instId: new mongoose.Types.ObjectId("64c8a1333a682392b042c38f"),
+                propertyId: new mongoose.Types.ObjectId(
+                  "64c8a4d13a682392b042c399"
+                ),
+              },
             },
-          },
-          {
-            $lookup: {
-              from: "assets",
-              localField: "_id",
-              foreignField: "category._id",
-              as: "assets",
+            {
+              $lookup: {
+                from: "assets",
+                localField: "_id",
+                foreignField: "category._id",
+                as: "assets",
+              },
             },
-          },
-          {
-            $unwind: {
-              path: "$assets",
+            {
+              $unwind: {
+                path: "$assets",
+              },
             },
-          },
-          {
-            $project: {
-              assetId: "$assets._id",
-              assetName: "$assets.assetname",
-              category: "$assets.category",
-              features: "$assets.features",
+            {
+              $project: {
+                assetId: "$assets._id",
+                assetName: "$assets.assetname",
+                category: "$assets.category",
+                features: "$assets.features",
+              },
             },
-          },
-        ];
+          ];
     const details = await Category.aggregate(query);
     res.json(details);
   } catch (error) {
     res.status(500).json({ errors: [{ msg: "Server Error" }] });
     console.log(error);
+  }
+});
+
+// Get a list of all file names from MongoDB
+app.get("/api/files", async (req, res) => {
+  try {
+    const files = await filenames.find();
+    res.status(200).json(files);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Get a list of all file names from MongoDB
+app.get("/api/assets", async (req, res) => {
+  try {
+    const files = await assets.find();
+    res.status(200).json(files);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });

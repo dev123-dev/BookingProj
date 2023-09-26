@@ -1,6 +1,4 @@
 import React from "react";
-import assetArr from "../component/Page1";
-
 export default function Page2({ data }) {
   return (
     <>
