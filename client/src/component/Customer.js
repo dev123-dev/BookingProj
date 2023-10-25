@@ -24,6 +24,8 @@ export default function Customer() {
   const [asset, setasset] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
 
+  console.log("filteredArray1", filteredArray1);
+
   // Function to toggle the visibility of the div
   const toggleDiv = () => {
     setShowCard(!showCard);
@@ -118,7 +120,7 @@ export default function Customer() {
                     <div className="row col-lg-12 col-md-12 col-sm-9 col-12">
                       <div className="row col-lg-12 col-md-12 col-sm-9 col-12">
                         <div className="col-lg-6  col-md-12 col-sm-12 col-12">
-                          <label className="label-control ">Full Name</label>
+                          <label className="label-control">Full Name</label>
                           <input
                             type="text"
                             name="name"
@@ -289,9 +291,7 @@ export default function Customer() {
                           />
                         </div>
                         <div className="col-lg-1  col-md-12 col-sm-12 col-12">
-                          <label className="label-control ">
-                            No of Children
-                          </label>
+                          <label className="label-control ">Children</label>
                           <input
                             type="number"
                             name="noofchildren"
@@ -414,27 +414,26 @@ export default function Customer() {
                   <div className="row col-lg-12 col-md-12 col-sm-9 col-12 mt-4">
                     <div className="container">
                       <div className="row">
-                        {filteredArray1.map((file) => (
-                          <div
-                            key={file}
-                            className="col-lg-3 col-md-4 col-sm-6 col-12 mb-4"
-                          >
+                        {filteredArray1 &&
+                          filteredArray1.map((file) => (
                             <div
-                              className={`card ${
-                                selectedCards.includes(file)
-                                  ? "selectedasset"
-                                  : "unselectedasset"
-                              }`}
-                              onClick={() => handleCardClick(file)}
+                              key={file}
+                              className="col-lg-3 col-md-4 col-sm-6 col-12 mb-4"
                             >
-                              {/* Your card content here */}
-                              <div className="card-body">
-                                <h5 className="card-title">{file}</h5>
-                                {/* <p className="card-text">{file.Description}</p> */}
+                              <div
+                                className={`card ${
+                                  selectedCards.includes(file)
+                                    ? "selectedasset"
+                                    : "unselectedasset"
+                                }`}
+                                onClick={() => handleCardClick(file)}
+                              >
+                                <div className="card-body">
+                                  <h5 className="card-title">{file}</h5>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                       </div>
                     </div>
                   </div>

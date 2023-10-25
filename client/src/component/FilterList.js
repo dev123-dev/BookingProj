@@ -242,18 +242,18 @@ export default function FilterList() {
         <div>
           <div className="Sub-Heading ">Date Range</div>
           <div className="row mt-2">
-            <div className="col-lg-4 col-md-6 col-sm-4 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-4 col-12">
               <input
-                type="date"
+                type="datetime-local"
                 name="startDate"
                 className="datefield"
                 onChange={(e) => onDateChange(e)}
               />
             </div>
-            <div className="col-lg-1 col-md-12 col-sm-12 ">-</div>
-            <div className="col-lg-4 col-md-6 col-sm-4 col-12">
+            {/* <div className="col-lg-1 col-md-12 col-sm-12 ">-</div> */}
+            <div className="col-lg-6 col-md-6 col-sm-4 col-12">
               <input
-                type="date"
+                type="datetime-local"
                 name="endDate"
                 className="datefield"
                 onChange={(e) => onDateChange(e)}

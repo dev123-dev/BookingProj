@@ -14,7 +14,7 @@
     border-bottom-left-radius: 30px;
   }
   .filter-container {
-    max-height: 750px; /* Set your desired max height here */
+    max-height: 680px; /* Set your desired max height here */
     overflow-y: auto;
   }
 }

@@ -163,7 +163,7 @@ export default function HospitalForm() {
                         </div>
 
                         <div className="col-lg-6  col-md-12 col-sm-12 col-12">
-                          <label className="label-control "> Consult to</label>
+                          <label className="label-control ">Consult to</label>
                           <input
                             type="text"
                             name="Noofpersons"
